@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI기반 충수염 자가진단 설문지(항소담외과-소아용:12세이하)</title>
+    <style>
+        body { 
+            font-family: '굴림', 'Gulim', Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px;
+            background: linear-gradient(135deg, #ffeaa7, #fab1a0, #fd79a8);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(45deg, #6c5ce7, #fd79a8);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+        }
+        .header::before {
+            content: '🏥';
+            font-size: 40px;
+            position: absolute;
+            top: 10px;
+            left: 20px;
+        }
+        .header::after {
+            content: '🩺';
+            font-size: 40px;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+        h1 { 
+            margin: 0;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .content {
+            padding: 30px;
+        }
+        .important { 
+            background: #ffe6e6;
+            border: 2px solid #ff7675;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+            font-weight: bold;
+            text-align: center;
+            position: relative;
+        }
+        .important::before {
+            content: '⚠️';
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        .section { 
+            background: #f8f9ff;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid #6c5ce7;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            color: #6c5ce7;
+            margin-top: 0;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .section h2::before {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        .basic-info h2::before { content: '👶'; }
+        .symptoms h2::before { content: '🤒'; }
+        .duration h2::before { content: '⏰'; }
+        .pain h2::before { content: '😣'; }
+        .tests h2::before { content: '🔬'; }
+        
+        label { 
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        label:hover {
+            background: #e8f4fd;
+            border-color: #74b9ff;
+            transform: translateX(5px);
+        }
+        input[type="checkbox"], input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        input[type="number"], select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+        .pain-slider {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .pain-scale {
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #00b894, #fdcb6e, #e17055);
+            outline: none;
+            margin: 10px 0;
+        }
+        .pain-faces {
+            display: flex;
+            justify-content: space-between;
+            font-size: 24px;
+            margin: 10px 0;
+        }
+        .submit-btn {
+            background: linear-gradient(45deg, #00b894, #00cec9);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        .result {
+            background: #f1f2f6;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 2px solid #ddd;
+        }
+        .result h2 {
+            color: #2d3436;
+            margin-top: 0;
+        }
+        .diagnosis-item {
+            background: white;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 5px solid;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .diagnosis-1 { border-left-color: #e17055; }
+        .diagnosis-2 { border-left-color: #fdcb6e; }
+        .diagnosis-3 { border-left-color: #74b9ff; }
+        .high-risk {
+            background: #fee;
+            border: 2px solid #e17055;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: bold;
+            color: #c0392b;
+        }
+        .urgency-indicator {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            color: white;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .urgent { background: #e17055; }
+        .moderate { background: #fdcb6e; color: #333; }
+        .low { background: #00b894; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AI기반 충수염 자가진단 설문지<br>(항소담외과-소아용:12세이하)</h1>
+        </div>
+        
+        <div class="content">
+            <div class="important">
+                이 검사는 참고용으로 활용하여야 하며, 정확한 진단은 각 질환에 따른 전문의의 진찰이 필요합니다.
+            </div>
+
+            <div class="section basic-info">
+                <h2>기본 정보</h2>
+                <label>
+                    성별:
+                    <select id="gender">
+                        <option value="">선택해주세요</option>
+                        <option value="male">남자 👦</option>
+                        <option value="female">여자 👧</option>
+                    </select>
+                </label>
+                <label>
+                    나이: <input type="number" id="age" min="0" max="12" placeholder="나이를 입력하세요"> 세
+                </label>
+            </div>
+
+            <div class="section tests">
+                <h2>혈액검사 결과 (있는 경우만)</h2>
+                <label><input type="radio" name="wbc" value="none"> 검사 안함</label>
+                <label><input type="radio" name="wbc" value="normal"> 정상 (10,000 미만)</label>
+                <label><input type="radio" name="wbc" value="high10"> 약간 높음 (10,000~18,000)</label>
+                <label><input type="radio" name="wbc" value="high18"> 많이 높음 (18,000 이상)</label>
+            </div>
+
+            <div class="section symptoms">
+                <h2>증상 선택 (복수 선택 가능)</h2>
+                
+                <h3>🌡️ 열과 전신증상</h3>
+                <label><input type="checkbox" name="symptoms" value="fever"> 열이 남 (38도 이상)</label>
+                <label><input type="checkbox" name="symptoms" value="high_fever"> 고열 (39도 이상)</label>
+                <label><input type="checkbox" name="symptoms" value="chills"> 오한 (몸이 떨림)</label>
+                <label><input type="checkbox" name="symptoms" value="fatigue"> 입맛이 없음</label>
+                <label><input type="checkbox" name="symptoms" value="irritability"> 보챔/짜증이 많음</label>
+                <label><input type="checkbox" name="symptoms" value="lethargy"> 축 늘어지고 기운이 없음</label>
+                <label style="background: #f0f0f0; border: 2px dashed #999;"><input type="checkbox" name="symptoms" value="no_fever_systemic"> ❌ 해당사항 없음</label>
+                
+                <h3>🤢 소화기 증상</h3>
+                <label><input type="checkbox" name="symptoms" value="vomiting"> 구토</label>
+                <label><input type="checkbox" name="symptoms" value="nausea"> 메스꺼움</label>
+                <label><input type="checkbox" name="symptoms" value="diarrhea"> 설사</label>
+                <label><input type="checkbox" name="symptoms" value="loose_stool"> 무른 변</label>
+                <label><input type="checkbox" name="symptoms" value="constipation"> 변비</label>
+                <label style="background: #f0f0f0; border: 2px dashed #999;"><input type="checkbox" name="symptoms" value="no_gi_symptoms"> ❌ 해당사항 없음</label>
+                
+                <h3>😖 복통 위치와 특징</h3>
+                <label><input type="checkbox" name="symptoms" value="ab_pain_periumbilical"> 배꼽 주위 통증</label>
+                <label><input type="checkbox" name="symptoms" value="ab_pain_rlq"> 오른쪽 아래배 통증</label>
+                <label><input type="checkbox" name="symptoms" value="ab_pain_generalized"> 배 전체가 아픔</label>
+                <label><input type="checkbox" name="symptoms" value="ab_pain_upper"> 명치 부위 통증</label>
+                <label><input type="checkbox" name="symptoms" value="pain_migration"> 통증이 배꼽에서 오른쪽으로 이동</label>
+                <label><input type="checkbox" name="symptoms" value="pain_walking"> 걸을 때 더 아픔</label>
+                <label><input type="checkbox" name="symptoms" value="pain_jumping"> 뛰거나 흔들릴 때 아픔</label>
+                <label><input type="checkbox" name="symptoms" value="pain_cough"> 기침할 때 배가 아픔</label>
+                <label style="background: #f0f0f0; border: 2px dashed #999;"><input type="checkbox" name="symptoms" value="no_abdominal_pain"> ❌ 해당사항 없음</label>
+                
+                <h3>🚗 특별한 증상</h3>
+                <label><input type="checkbox" name="symptoms" value="car_pain"> 차 타고 올 때 울퉁불퉁한 길에서 아팠음</label>
+                <label><input type="checkbox" name="symptoms" value="lying_still"> 가만히 누워서 다리를 구부리고 있음</label>
+                <label><input type="checkbox" name="symptoms" value="avoid_movement"> 움직이기 싫어함</label>
+                <label style="background: #f0f0f0; border: 2px dashed #999;"><input type="checkbox" name="symptoms" value="no_special_symptoms"> ❌ 해당사항 없음</label>
+                
+                <h3>💧 소변 관련 증상</h3>
+                <label><input type="checkbox" name="symptoms" value="dysuria"> 소변 볼 때 아픔</label>
+                <label><input type="checkbox" name="symptoms" value="frequency"> 소변을 자주 봄</label>
+                <label><input type="checkbox" name="symptoms" value="urgency"> 소변이 급함</label>
+                <label style="background: #f0f0f0; border: 2px dashed #999;"><input type="checkbox" name="symptoms" value="no_urinary_symptoms"> ❌ 해당사항 없음</label>
+                
+                <h3>🤧 감기 증상</h3>
+                <label><input type="checkbox" name="symptoms" value="cough"> 기침</label>
+                <label><input type="checkbox" name="symptoms" value="runny_nose"> 콧물</label>
+                <label><input type="checkbox" name="symptoms" value="sore_throat"> 목 아픔</label>
+                <label style="background: #f0f0f0; border: 2px dashed #999;"><input type="checkbox" name="symptoms" value="no_cold_symptoms"> ❌ 해당사항 없음</label>
+                
+                <h3>👶 영아 특별 증상 (3세 미만)</h3>
+                <label><input type="checkbox" name="symptoms" value="crying_inconsolable"> 달래도 계속 우는 아이</label>
+                <label><input type="checkbox" name="symptoms" value="feeding_refusal"> 젖/밥을 안 먹음</label>
+                <label><input type="checkbox" name="symptoms" value="drawing_legs"> 다리를 배로 끌어당김</label>
+                <label style="background: #f0f0f0; border: 2px dashed #999;"><input type="checkbox" name="symptoms" value="no_infant_symptoms"> ❌ 해당사항 없음 (또는 3세 이상)</label>
+            </div>
+
+            <div class="section duration">
+                <h2>증상이 언제부터 시작됐나요?</h2>
+                <label><input type="radio" name="duration" value="6h"> 6시간 이내</label>
+                <label><input type="radio" name="duration" value="12h"> 12시간 이내</label>
+                <label><input type="radio" name="duration" value="24h"> 1일 이내</label>
+                <label><input type="radio" name="duration" value="48h"> 2일 이내</label>
+                <label><input type="radio" name="duration" value="72h"> 3일 이상</label>
+            </div>
+
+            <div class="section pain">
+                <h2>아픈 정도를 표시해주세요</h2>
+                <div class="pain-slider">
+                    <div class="pain-faces">
+                        <span>😊</span><span>🙂</span><span>😐</span><span>😟</span><span>😣</span><span>😫</span><span>😰</span><span>😭</span><span>😱</span><span>💀</span>
+                    </div>
+                    <input type="range" id="pain_scale" name="pain_scale" min="0" max="10" value="0" class="pain-scale" 
+                           oninput="document.getElementById('pain_output').innerText = this.value">
+                    <div style="font-size: 24px; font-weight: bold; color: #6c5ce7;">
+                        아픈 정도: <span id="pain_output">0</span> / 10
+                    </div>
+                </div>
+            </div>
+
+            <button class="submit-btn" onclick="calculateResult()">🔍 진단 결과 보기</button>
+
+            <div class="section result" id="result_section" style="display: none;">
+                <h2>📊 예상 진단 결과</h2>
+                <div id="result"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateResult() {
+            const age = parseInt(document.getElementById('age').value) || 0;
+            const gender = document.getElementById('gender').value;
+            const symptoms = Array.from(document.querySelectorAll('input[name="symptoms"]:checked')).map(e => e.value);
+            const duration = document.querySelector('input[name="duration"]:checked')?.value || '';
+            const wbc = document.querySelector('input[name="wbc"]:checked')?.value || '';
+            const pain = parseInt(document.getElementById('pain_scale').value);
+
+            let scores = {
+                '급성 충수염': 0,
+                '급성 충수염(천공가능성)': 0,
+                '장염/위장염': 0,
+                '장중첩증': 0,
+                '장간막 림프절염': 0,
+                '요로감염': 0,
+                '변비': 0
+            };
+
+            // 급성 충수염 점수 계산 (Alvarado score 기반 + 소아 특성 반영)
+            if (symptoms.includes('pain_migration')) scores['급성 충수염'] += 15; // 통증 이동이 가장 중요
+            if (symptoms.includes('ab_pain_rlq')) scores['급성 충수염'] += 12;
+            if (symptoms.includes('ab_pain_periumbilical')) scores['급성 충수염'] += 8;
+            if (symptoms.includes('vomiting')) scores['급성 충수염'] += 8;
+            if (symptoms.includes('fever')) scores['급성 충수염'] += 6;
+            if (symptoms.includes('fatigue')) scores['급성 충수염'] += 6;
+            if (symptoms.includes('nausea')) scores['급성 충수염'] += 5;
+            
+            // 소아 특별 징후
+            if (symptoms.includes('car_pain')) scores['급성 충수염'] += 10;
+            if (symptoms.includes('lying_still')) scores['급성 충수염'] += 8;
+            if (symptoms.includes('avoid_movement')) scores['급성 충수염'] += 7;
+            if (symptoms.includes('pain_walking')) scores['급성 충수염'] += 8;
+            if (symptoms.includes('pain_jumping')) scores['급성 충수염'] += 8;
+            if (symptoms.includes('pain_cough')) scores['급성 충수염'] += 6;
+            
+            // 영아 특별 증상
+            if (age < 3) {
+                if (symptoms.includes('crying_inconsolable')) scores['급성 충수염'] += 8;
+                if (symptoms.includes('feeding_refusal')) scores['급성 충수염'] += 6;
+                if (symptoms.includes('drawing_legs')) scores['급성 충수염'] += 7;
+            }
+            
+            // 검사 결과
+            if (wbc === 'high10') scores['급성 충수염'] += 8;
+            if (wbc === 'high18') scores['급성 충수염'] += 12;
+            
+            // 기간별 가중치
+            if (duration === '12h') scores['급성 충수염'] += 3;
+            if (duration === '24h') scores['급성 충수염'] += 5;
+            if (duration === '48h') scores['급성 충수염'] += 8;
+            if (duration === '72h') scores['급성 충수염'] += 10; // 소아에서 천공 위험
+            
+            // 통증 강도
+            if (pain >= 7) scores['급성 충수염'] += 8;
+            else if (pain >= 5) scores['급성 충수염'] += 5;
+            
+            // '해당사항 없음' 선택 시 감별진단에 반영
+            
+            // 발열/전신증상이 없으면 바이러스성 질환 가능성 낮춤
+            if (symptoms.includes('no_fever_systemic')) {
+                scores['장간막 림프절염'] -= 8;
+                scores['요로감염'] -= 5;
+                scores['장염/위장염'] -= 3;
+                // 충수염은 초기에 열이 없을 수 있으므로 크게 감점하지 않음
+            }
+            
+            // 소화기 증상이 없으면 장염 가능성 크게 낮춤
+            if (symptoms.includes('no_gi_symptoms')) {
+                scores['장염/위장염'] -= 15;
+                scores['장중첩증'] -= 8;
+                scores['변비'] -= 10;
+                // 충수염도 초기엔 소화기 증상 없을 수 있으므로 약간만 감점
+                scores['급성 충수염'] -= 3;
+            }
+            
+            // 복통이 없으면 대부분 질환 가능성 낮춤
+            if (symptoms.includes('no_abdominal_pain')) {
+                scores['급성 충수염'] -= 20;
+                scores['급성 충수염(천공가능성)'] -= 20;
+                scores['장염/위장염'] -= 15;
+                scores['장중첩증'] -= 15;
+                scores['변비'] -= 15;
+                scores['장간막 림프절염'] -= 10;
+                // 요로감염은 복통 없이도 가능
+            }
+            
+            // 특별한 증상(움직임 관련)이 없으면 충수염 가능성 낮춤
+            if (symptoms.includes('no_special_symptoms')) {
+                scores['급성 충수염'] -= 8;
+                scores['급성 충수염(천공가능성)'] -= 5;
+            }
+            
+            // 소변 증상이 없으면 요로감염 가능성 크게 낮춤
+            if (symptoms.includes('no_urinary_symptoms')) {
+                scores['요로감염'] -= 20;
+            }
+            
+            // 감기 증상이 없으면 장간막 림프절염 가능성 낮춤
+            if (symptoms.includes('no_cold_symptoms')) {
+                scores['장간막 림프절염'] -= 10;
+            }
+            
+            // 영아 증상이 없으면 (또는 3세 이상) 장중첩증 가능성 낮춤
+            if (symptoms.includes('no_infant_symptoms') || age >= 3) {
+                if (age >= 3) {
+                    scores['장중첩증'] -= 10; // 3세 이상에서는 드뭄
+                }
+            }
+            let perforationRisk = 0;
+            if (symptoms.includes('high_fever')) perforationRisk += 3;
+            if (wbc === 'high18') perforationRisk += 3;
+            if (duration === '48h') perforationRisk += 2;
+            if (duration === '72h') perforationRisk += 3;
+            if (symptoms.includes('ab_pain_generalized')) perforationRisk += 2;
+            if (symptoms.includes('chills')) perforationRisk += 2;
+            if (age < 6) perforationRisk += 2;
+            
+            // 충수염 점수가 높고 천공 위험이 있으면 천공성으로 분류
+            if (scores['급성 충수염'] > 30 && perforationRisk >= 5) {
+                scores['급성 충수염(천공가능성)'] = scores['급성 충수염'] + perforationRisk * 5;
+                scores['급성 충수염'] = Math.max(0, scores['급성 충수염'] - 20);
+            }
+
+            // 장염/위장염
+            if (symptoms.includes('diarrhea')) scores['장염/위장염'] += 15;
+            if (symptoms.includes('loose_stool')) scores['장염/위장염'] += 10;
+            if (symptoms.includes('vomiting')) scores['장염/위장염'] += 8;
+            if (symptoms.includes('nausea')) scores['장염/위장염'] += 6;
+            if (symptoms.includes('fever')) scores['장염/위장염'] += 5;
+            if (symptoms.includes('ab_pain_generalized')) scores['장염/위장염'] += 8;
+            if (pain < 5) scores['장염/위장염'] += 5;
+
+            // 장중첩증 (주로 2세 미만)
+            if (age < 2) {
+                if (symptoms.includes('crying_inconsolable')) scores['장중첩증'] += 15;
+                if (symptoms.includes('vomiting')) scores['장중첩증'] += 10;
+                if (symptoms.includes('drawing_legs')) scores['장중첩증'] += 12;
+                if (symptoms.includes('ab_pain_rlq')) scores['장중첩증'] += 8;
+                if (symptoms.includes('lethargy')) scores['장중첩증'] += 8;
+                if (duration === '6h' || duration === '12h') scores['장중첩증'] += 8;
+            }
+
+            // 장간막 림프절염
+            if (symptoms.includes('cough') || symptoms.includes('runny_nose') || symptoms.includes('sore_throat')) {
+                scores['장간막 림프절염'] += 12;
+            }
+            if (symptoms.includes('fever')) scores['장간막 림프절염'] += 8;
+            if (symptoms.includes('ab_pain_periumbilical')) scores['장간막 림프절염'] += 8;
+            if (symptoms.includes('ab_pain_rlq')) scores['장간막 림프절염'] += 6;
+            if (age >= 5 && age <= 12) scores['장간막 림프절염'] += 5; // 호발 연령
+
+            // 요로감염
+            if (symptoms.includes('dysuria')) scores['요로감염'] += 15;
+            if (symptoms.includes('frequency')) scores['요로감염'] += 10;
+            if (symptoms.includes('urgency')) scores['요로감염'] += 8;
+            if (symptoms.includes('fever')) scores['요로감염'] += 8;
+            if (gender === 'female') scores['요로감염'] += 5; // 여아에서 더 흔함
+
+            // 변비
+            if (symptoms.includes('constipation')) scores['변비'] += 15;
+            if (symptoms.includes('ab_pain_generalized')) scores['변비'] += 8;
+            if (symptoms.includes('ab_pain_periumbilical')) scores['변비'] += 6;
+            if (!symptoms.includes('fever')) scores['변비'] += 5;
+            if (pain < 6) scores['변비'] += 5;
+
+            // 총합 계산 및 퍼센트 변환
+            const total = Math.max(Object.values(scores).reduce((a, b) => a + b, 0), 1);
+            const percentages = Object.keys(scores).map(disease => {
+                return [disease, Math.round((scores[disease] / total) * 100)];
+            });
+
+            // 상위 3개 질환 선택
+            percentages.sort((a, b) => b[1] - a[1]);
+            const top3 = percentages.slice(0, 3);
+
+            // 진료과 및 검사 추천
+            const recommendations = {
+                '급성 충수염': {
+                    dept: '외과진료 권유',
+                    tests: 'CT, 초음파, 혈액검사',
+                    urgency: 'urgent'
+                },
+                '급성 충수염(천공가능성)': {
+                    dept: '응급외과진료 즉시',
+                    tests: 'CT, 혈액검사, 응급수술 준비',
+                    urgency: 'urgent'
+                },
+                '장염/위장염': {
+                    dept: '소아과 진료',
+                    tests: '대변검사, 혈액검사',
+                    urgency: 'moderate'
+                },
+                '장중첩증': {
+                    dept: '소아외과 응급진료',
+                    tests: '초음파, X-ray',
+                    urgency: 'urgent'
+                },
+                '장간막 림프절염': {
+                    dept: '소아과 진료',
+                    tests: '혈액검사, 초음파',
+                    urgency: 'low'
+                },
+                '요로감염': {
+                    dept: '소아과 진료',
+                    tests: '소변검사, 혈액검사',
+                    urgency: 'moderate'
+                },
+                '변비': {
+                    dept: '소아과 진료',
+                    tests: 'X-ray (필요시)',
+                    urgency: 'low'
+                }
+            };
+
+            // 응급 상황 체크
+            let isHighRisk = false;
+            let riskFactors = [];
+            
+            if (age < 6 && (duration === '48h' || duration === '72h')) {
+                isHighRisk = true;
+                riskFactors.push('6세 미만에서 48시간 이상 증상 지속');
+            }
+            if (symptoms.includes('high_fever') && (symptoms.includes('ab_pain_rlq') || symptoms.includes('pain_migration'))) {
+                isHighRisk = true;
+                riskFactors.push('고열과 전형적 충수염 증상');
+            }
+            if (wbc === 'high18' && scores['급성 충수염(천공가능성)'] > 0) {
+                isHighRisk = true;
+                riskFactors.push('백혈구 수치 18,000 이상으로 천공 의심');
+            }
+            if (pain >= 8 && symptoms.includes('avoid_movement')) {
+                isHighRisk = true;
+                riskFactors.push('심한 통증과 움직임 기피');
+            }
+            if (wbc === 'high18') {
+                isHighRisk = true;
+                riskFactors.push('백혈구 수치 현저히 높음');
+            }
+
+            // 결과 출력
+            let resultHTML = '';
+            
+            if (isHighRisk) {
+                resultHTML += `<div class="high-risk">
+                    🚨 <strong>응급상황 의심!</strong><br>
+                    즉시 응급실 내원을 권합니다.<br>
+                    위험요인: ${riskFactors.join(', ')}
+                </div>`;
+            }
+
+            top3.forEach((item, index) => {
+                const [disease, percentage] = item;
+                const rec = recommendations[disease];
+                const urgencyClass = rec.urgency;
+                const urgencyText = urgencyClass === 'urgent' ? '응급' : 
+                                  urgencyClass === 'moderate' ? '보통' : '낮음';
+                
+                resultHTML += `
+                    <div class="diagnosis-item diagnosis-${index + 1}">
+                        <strong>${index + 1}. ${disease}: ${percentage}%</strong>
+                        <span class="urgency-indicator ${urgencyClass}">${urgencyText}</span>
+                        <br>
+                        👨‍⚕️ 권장 진료과: ${rec.dept}<br>
+                        🔬 권장 검사: ${rec.tests}
+                    </div>
+                `;
+            });
+
+            resultHTML += `
+                <div style="margin-top: 20px; padding: 15px; background: #e8f4fd; border-radius: 10px;">
+                    <h3>⚠️ 중요한 안내사항</h3>
+                    <ul style="text-align: left;">
+                        <li>이 결과는 참고용이며, <strong>반드시 의사의 진찰</strong>을 받으세요.</li>
+                        <li>소아는 증상이 빠르게 변할 수 있으므로 <strong>지속적인 관찰</strong>이 필요합니다.</li>
+                        <li>증상이 악화되거나 새로운 증상이 나타나면 <strong>즉시 병원</strong>에 가세요.</li>
+                        <li>6세 미만 아이는 48시간 이상 복통이 지속되면 <strong>응급실</strong>로 가세요.</li>
+                    </ul>
+                </div>
+            `;
+
+            document.getElementById('result').innerHTML = resultHTML;
+            document.getElementById('result_section').style.display = 'block';
+            document.getElementById('result_section').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
